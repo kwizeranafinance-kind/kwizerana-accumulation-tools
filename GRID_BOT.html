@@ -182,6 +182,19 @@ canvas{display:block;width:100%;border-radius:8px}
 .alloc-bar-fill{height:100%;border-radius:4px;transition:width .8s}
 .alloc-label{font-size:11px;color:var(--text2);min-width:80px}
 .alloc-pct{font-size:11px;font-weight:700;font-family:var(--mono);min-width:36px;text-align:right}
+/* FILTER STATUS BAR */
+.bc-filt{padding:7px 16px;border-bottom:1px solid var(--border);display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:rgba(0,0,0,.14)}
+.fi{display:flex;align-items:center;gap:4px;font-size:10px}
+.fi-lbl{color:var(--text3);white-space:nowrap}
+.fi-val{font-family:var(--mono);font-weight:600;font-size:10px}
+.fi-ok{color:var(--green)}.fi-blk{color:var(--red)}.fi-amb{color:var(--amber)}
+.fi-sep{width:1px;height:12px;background:var(--border)}
+/* CYCLER (click-to-cycle setting values) */
+.cyc{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;transition:color .15s}
+.cyc:hover{color:var(--accent2)}
+/* SCALP LOG TYPES */
+.li-scalp{background:rgba(168,85,247,.15);color:#a855f7}
+.li-sell{background:rgba(59,130,246,.15);color:#3b82f6}
 </style>
 </head>
 <body>
@@ -287,6 +300,32 @@ canvas{display:block;width:100%;border-radius:8px}
           <span class="tog-dot"></span><span class="tog-txt">Expand Down</span>
         </div>
       </div>
+      <!-- Advanced Controls Row 2 -->
+      <div class="bc-ctrl" style="background:rgba(0,0,0,.15)">
+        <div class="tog on" id="phar-zone-tog" onclick="toggleFeature('phar','zone')">
+          <span class="tog-dot"></span><span class="tog-txt">Zone Filter</span>
+        </div>
+        <div class="tog off" id="phar-scalp-tog" onclick="toggleFeature('phar','scalp')">
+          <span class="tog-dot"></span><span class="tog-txt">Scalping</span>
+        </div>
+        <div class="ctrl-group" style="margin-left:auto;gap:6px">
+          <span class="ctrl-label">Daily</span>
+          <span class="cyc fi-val fi-amb" id="phar-daily-disp" onclick="cycleDaily('phar')" title="Click to change daily limit">$0/$500</span>
+        </div>
+        <div class="ctrl-group" style="gap:6px">
+          <span class="ctrl-label">Interval</span>
+          <span class="cyc fi-val" id="phar-int-disp" onclick="cycleInterval('phar')" title="Click to change min fill interval" style="color:var(--text3)">Off</span>
+        </div>
+      </div>
+      <!-- Filter Status Bar -->
+      <div class="bc-filt" id="phar-filt-bar">
+        <div class="fi"><span class="fi-lbl">RSI</span>&nbsp;<span class="fi-val fi-ok cyc" id="phar-rsi-disp" onclick="cycleRSI('phar')" title="Click to change RSI threshold">50.0</span>&nbsp;<span class="fi-val" id="phar-rsi-status" style="color:var(--text3)">threshold: <span class="cyc" id="phar-rsi-thresh" onclick="cycleRSI('phar')">45</span></span></div>
+        <div class="fi-sep"></div>
+        <div class="fi"><span class="fi-lbl">MA20</span>&nbsp;<span class="fi-val" id="phar-ma-disp" style="color:var(--text3)">—</span>&nbsp;<span id="phar-ma-status" style="font-size:10px;color:var(--text3)">building…</span></div>
+        <div class="fi-sep"></div>
+        <div class="fi"><span class="fi-lbl">Scalp %</span>&nbsp;<span class="cyc fi-val" id="phar-scalp-pct" onclick="cycleScalpPct('phar')" title="Click to change scalp target %" style="color:var(--text2)">3%</span>&nbsp;<span class="fi-lbl">qty</span>&nbsp;<span class="cyc fi-val" id="phar-scalp-qty" onclick="cycleScalpQty('phar')" title="Click to change scalp sell qty" style="color:var(--text2)">50%</span></div>
+        <div class="fi" style="margin-left:auto"><span class="fi-lbl">Scalp P&amp;L</span>&nbsp;<span class="fi-val" id="phar-scalp-pnl" style="color:var(--text3)">$0.00</span></div>
+      </div>
       <!-- Viz -->
       <div class="bc-viz">
         <div class="viz-row"><span>Price Map <span id="phar-fc" style="color:var(--green);margin-left:8px">0/8 filled</span></span><span id="phar-range-label" style="font-size:10px;color:var(--text3)">$131 – $180</span></div>
@@ -313,6 +352,12 @@ canvas{display:block;width:100%;border-radius:8px}
           <div class="si"><div class="si-l">Order Size</div><div class="si-v">$187.50</div></div>
           <div class="si"><div class="si-l">Low</div><div class="si-v">$131.00</div></div>
           <div class="si"><div class="si-l">High</div><div class="si-v">$180.00</div></div>
+        </div>
+        <div class="set-row">
+          <div class="si"><div class="si-l">Daily Limit</div><div class="si-v cyc" id="phar-dlimit" onclick="cycleDaily('phar')" title="Click to change">$500</div></div>
+          <div class="si"><div class="si-l">Weekly Limit</div><div class="si-v cyc" id="phar-wlimit" onclick="cycleWeekly('phar')" title="Click to change">Off</div></div>
+          <div class="si"><div class="si-l">Min Interval</div><div class="si-v cyc" id="phar-mint" onclick="cycleInterval('phar')" title="Click to change">Off</div></div>
+          <div class="si"><div class="si-l">Scalp Targets</div><div class="si-v" id="phar-scalp-count" style="color:var(--text3)">0 active</div></div>
         </div>
       </div>
     </div>
@@ -350,6 +395,32 @@ canvas{display:block;width:100%;border-radius:8px}
           <span class="tog-dot"></span><span class="tog-txt">Expand Down</span>
         </div>
       </div>
+      <!-- Advanced Controls Row 2 -->
+      <div class="bc-ctrl" style="background:rgba(0,0,0,.15)">
+        <div class="tog on" id="aero-zone-tog" onclick="toggleFeature('aero','zone')">
+          <span class="tog-dot"></span><span class="tog-txt">Zone Filter</span>
+        </div>
+        <div class="tog off" id="aero-scalp-tog" onclick="toggleFeature('aero','scalp')">
+          <span class="tog-dot"></span><span class="tog-txt">Scalping</span>
+        </div>
+        <div class="ctrl-group" style="margin-left:auto;gap:6px">
+          <span class="ctrl-label">Daily</span>
+          <span class="cyc fi-val fi-amb" id="aero-daily-disp" onclick="cycleDaily('aero')" title="Click to change daily limit">$0/$500</span>
+        </div>
+        <div class="ctrl-group" style="gap:6px">
+          <span class="ctrl-label">Interval</span>
+          <span class="cyc fi-val" id="aero-int-disp" onclick="cycleInterval('aero')" title="Click to change min fill interval" style="color:var(--text3)">Off</span>
+        </div>
+      </div>
+      <!-- Filter Status Bar -->
+      <div class="bc-filt" id="aero-filt-bar">
+        <div class="fi"><span class="fi-lbl">RSI</span>&nbsp;<span class="fi-val fi-ok cyc" id="aero-rsi-disp" onclick="cycleRSI('aero')" title="Click to change RSI threshold">50.0</span>&nbsp;<span class="fi-val" id="aero-rsi-status" style="color:var(--text3)">threshold: <span class="cyc" id="aero-rsi-thresh" onclick="cycleRSI('aero')">45</span></span></div>
+        <div class="fi-sep"></div>
+        <div class="fi"><span class="fi-lbl">MA20</span>&nbsp;<span class="fi-val" id="aero-ma-disp" style="color:var(--text3)">—</span>&nbsp;<span id="aero-ma-status" style="font-size:10px;color:var(--text3)">building…</span></div>
+        <div class="fi-sep"></div>
+        <div class="fi"><span class="fi-lbl">Scalp %</span>&nbsp;<span class="cyc fi-val" id="aero-scalp-pct" onclick="cycleScalpPct('aero')" title="Click to change scalp target %" style="color:var(--text2)">3%</span>&nbsp;<span class="fi-lbl">qty</span>&nbsp;<span class="cyc fi-val" id="aero-scalp-qty" onclick="cycleScalpQty('aero')" title="Click to change scalp sell qty" style="color:var(--text2)">50%</span></div>
+        <div class="fi" style="margin-left:auto"><span class="fi-lbl">Scalp P&amp;L</span>&nbsp;<span class="fi-val" id="aero-scalp-pnl" style="color:var(--text3)">$0.00</span></div>
+      </div>
       <!-- Viz -->
       <div class="bc-viz">
         <div class="viz-row"><span>Price Map <span id="aero-fc" style="color:var(--green);margin-left:8px">0/10 filled</span></span><span id="aero-range-label" style="font-size:10px;color:var(--text3)">$0.110 – $0.310</span></div>
@@ -376,6 +447,12 @@ canvas{display:block;width:100%;border-radius:8px}
           <div class="si"><div class="si-l">Order Size</div><div class="si-v">$200.00</div></div>
           <div class="si"><div class="si-l">Low</div><div class="si-v">$0.110</div></div>
           <div class="si"><div class="si-l">High</div><div class="si-v">$0.310</div></div>
+        </div>
+        <div class="set-row">
+          <div class="si"><div class="si-l">Daily Limit</div><div class="si-v cyc" id="aero-dlimit" onclick="cycleDaily('aero')" title="Click to change">$500</div></div>
+          <div class="si"><div class="si-l">Weekly Limit</div><div class="si-v cyc" id="aero-wlimit" onclick="cycleWeekly('aero')" title="Click to change">Off</div></div>
+          <div class="si"><div class="si-l">Min Interval</div><div class="si-v cyc" id="aero-mint" onclick="cycleInterval('aero')" title="Click to change">Off</div></div>
+          <div class="si"><div class="si-l">Scalp Targets</div><div class="si-v" id="aero-scalp-count" style="color:var(--text3)">0 active</div></div>
         </div>
       </div>
     </div>
@@ -519,6 +596,40 @@ canvas{display:block;width:100%;border-radius:8px}
         <span class="tag" style="background:rgba(16,185,129,.15);color:#10b981">✓ Adapts to market regime</span>
       </div>
     </div>
+    <div class="strat-card">
+      <div class="sc-title"><span style="color:#10b981">◉</span> Zone Filter (RSI + MA)</div>
+      <div class="sc-body">
+        When <strong>enabled</strong>: the bot only places buy orders when the market is in a <strong>"low area"</strong> — two conditions must both be met:<br><br>
+        <strong>RSI &lt; threshold</strong> (default 45): RSI below this level signals the asset is oversold or cooling off.<br>
+        <strong>Price &lt; MA20</strong>: price is trading below the 20-period moving average — a classic mean-reversion entry signal.<br><br>
+        <strong>Click the RSI value</strong> on each bot card to cycle the threshold: 30 / 35 / 40 / 45 / 50 / 55 / 60 / 70<br><br>
+        <span class="tag" style="background:rgba(16,185,129,.15);color:#10b981">✓ Avoids buying tops</span>
+        <span class="tag" style="background:rgba(99,102,241,.15);color:#818cf8">✓ Concentrates buys in dips</span>
+      </div>
+    </div>
+    <div class="strat-card">
+      <div class="sc-title"><span style="color:#a855f7">↑$</span> Scalping Module</div>
+      <div class="sc-body">
+        When <strong>enabled</strong>: after each grid buy fills, the bot automatically registers a <strong>partial sell target</strong> above it.<br><br>
+        <strong>Scalp %</strong> (default 3%): when price rises 3% above the fill price, the bot sells.<br>
+        <strong>Sell qty</strong> (default 50%): only 50% of the tokens from that fill are sold — the rest stays accumulated.<br><br>
+        Example: buy 10 PHAR @ $150 → when price hits $154.50 (+3%), sell 5 PHAR → lock in ~$22.50 profit while keeping 5 PHAR.<br><br>
+        <strong>Click Scalp % / qty</strong> on each bot card to cycle presets.<br><br>
+        <span class="tag" style="background:rgba(168,85,247,.15);color:#a855f7">✓ Books partial profits</span>
+        <span class="tag" style="background:rgba(16,185,129,.15);color:#10b981">✓ Keeps long exposure</span>
+      </div>
+    </div>
+    <div class="strat-card">
+      <div class="sc-title"><span style="color:#f59e0b">⏱</span> Spend Limits &amp; Intervals</div>
+      <div class="sc-body">
+        <strong>Daily limit</strong>: cap total $ deployed per calendar day. Resets at midnight. Prevents the bot from deploying all capital in a single-day crash.<br><br>
+        <strong>Weekly limit</strong>: cap total $ for the full week. Resets each Sunday. Useful for DCA pacing over time.<br><br>
+        <strong>Min interval</strong>: minimum minutes between any two fills on the same bot (3 / 5 / 10 / 15 / 30 / 60 / 120 min). Spreads buys over time even during fast drops.<br><br>
+        <strong>Click the values</strong> in each bot's settings row to cycle through presets. Set to <em>Off</em> for unlimited.<br><br>
+        <span class="tag" style="background:rgba(245,158,11,.15);color:#f59e0b">✓ Controls capital velocity</span>
+        <span class="tag" style="background:rgba(16,185,129,.15);color:#10b981">✓ Protects against flash crashes</span>
+      </div>
+    </div>
   </div>
   <div class="strat-card" style="margin-bottom:16px">
     <div class="sc-title"><span style="color:#818cf8">◈</span> Exit Strategy</div>
@@ -605,16 +716,50 @@ function genLevels(type,low,high,n){
   if(type==='fib')return genFib(low,high,n);
   return genArith(low,high,n);
 }
+// ─── INDICATOR HELPERS ──────────────────────────────────────────────────────
+function getWeekKey(d=new Date()){const s=new Date(d);s.setDate(d.getDate()-d.getDay());return s.toDateString();}
+function computeRSI(prices,period=14){
+  if(prices.length<period+1)return 50;
+  const slice=prices.slice(-(period+1));
+  const changes=slice.slice(1).map((p,i)=>p-slice[i]);
+  const ag=changes.map(c=>c>0?c:0).reduce((a,b)=>a+b,0)/period;
+  const al=changes.map(c=>c<0?-c:0).reduce((a,b)=>a+b,0)/period;
+  if(al===0)return 100;
+  return 100-(100/(1+ag/al));
+}
+function computeMA(prices,period=20){
+  if(!prices.length)return 0;
+  const sl=prices.slice(-Math.min(period,prices.length));
+  return sl.reduce((a,b)=>a+b,0)/sl.length;
+}
 // ─── STATE ──────────────────────────────────────────────────────────────────
 const bots={
   phar:{id:'phar',sym:'PHAR',price:186.94,active:true,trailing:true,expansion:true,
     gridType:'arith',nLevels:8,low:131,high:180,orderSize:187.5,budget:1500,
     held:0,invested:0,fills:new Set(),extraLevels:[],
-    fmt:v=>'$'+v.toFixed(2),change:-1.2,atr:4.2,priceHi:195,priceLo:128},
+    fmt:v=>'$'+v.toFixed(2),change:-1.2,atr:4.2,priceHi:195,priceLo:128,
+    // Zone filter
+    zoneFilter:true,rsiThreshold:45,maFilter:true,rsi:50,ma20:0,priceHistory:[],
+    // Scalping
+    scalping:false,scalpPct:3,scalpQty:50,scalpTargets:[],scalpProfit:0,
+    // Spend limits
+    dailyLimit:500,weeklyLimit:0,dailySpent:0,weeklySpent:0,
+    lastDayReset:new Date().toDateString(),lastWeekReset:getWeekKey(),
+    // Timing
+    minInterval:0,lastFillTime:0},
   aero:{id:'aero',sym:'AERO',price:0.34,active:true,trailing:true,expansion:true,
     gridType:'arith',nLevels:10,low:0.110,high:0.310,orderSize:200,budget:2000,
     held:0,invested:0,fills:new Set(),extraLevels:[],
-    fmt:v=>'$'+v.toFixed(4),change:-3.1,atr:8.7,priceHi:0.365,priceLo:0.095}
+    fmt:v=>'$'+v.toFixed(4),change:-3.1,atr:8.7,priceHi:0.365,priceLo:0.095,
+    // Zone filter
+    zoneFilter:true,rsiThreshold:45,maFilter:true,rsi:50,ma20:0,priceHistory:[],
+    // Scalping
+    scalping:false,scalpPct:3,scalpQty:50,scalpTargets:[],scalpProfit:0,
+    // Spend limits
+    dailyLimit:500,weeklyLimit:0,dailySpent:0,weeklySpent:0,
+    lastDayReset:new Date().toDateString(),lastWeekReset:getWeekKey(),
+    // Timing
+    minInterval:0,lastFillTime:0}
 };
 // Computed levels
 function getLevels(bot){
@@ -632,8 +777,8 @@ function renderLog(){
   const el=document.getElementById('loglist');
   if(!logs.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Scanning grid levels...</div>';return;}
   el.innerHTML=logs.map(l=>{
-    const ic={buy:'↓',info:'ℹ',warn:'⚡',trail:'↑'}[l.type]||'•';
-    const cls={buy:'li-buy',info:'li-info',warn:'li-warn',trail:'li-trail'}[l.type]||'li-info';
+    const ic={buy:'↓',info:'ℹ',warn:'⚡',trail:'↑',scalp:'↑$',sell:'↑'}[l.type]||'•';
+    const cls={buy:'li-buy',info:'li-info',warn:'li-warn',trail:'li-trail',scalp:'li-scalp',sell:'li-sell'}[l.type]||'li-info';
     return`<div class="logitem"><div class="li-ic ${cls}">${ic}</div><span class="li-t">${l.t}</span><span class="li-m">${l.msg}</span></div>`;
   }).join('');
 }
@@ -731,15 +876,62 @@ function updateStats(){
 // ─── FILL CHECK ─────────────────────────────────────────────────────────────
 function checkFills(bot){
   if(!bot.active)return;
+  // Update rolling indicators
+  bot.priceHistory.push(bot.price);
+  if(bot.priceHistory.length>60)bot.priceHistory.shift();
+  bot.rsi=computeRSI(bot.priceHistory);
+  bot.ma20=computeMA(bot.priceHistory);
+  // Daily/weekly limit resets
+  const dayKey=new Date().toDateString(),weekKey=getWeekKey();
+  if(bot.lastDayReset!==dayKey){bot.dailySpent=0;bot.lastDayReset=dayKey;lg('info',`<strong>${bot.sym}</strong> daily spend limit reset`);}
+  if(bot.lastWeekReset!==weekKey){bot.weeklySpent=0;bot.lastWeekReset=weekKey;lg('info',`<strong>${bot.sym}</strong> weekly spend limit reset`);}
+  // Zone filter: check RSI and MA conditions once (applies to all levels)
+  let zoneOk=true;
+  if(bot.zoneFilter){
+    const rsiOk=bot.rsi<=bot.rsiThreshold;
+    const maOk=!bot.maFilter||bot.ma20===0||bot.price<bot.ma20;
+    zoneOk=rsiOk&&maOk;
+  }
   const lvls=getLevels(bot);
   lvls.forEach((lp,i)=>{
-    if(!bot.fills.has(i)&&bot.price<=lp){
-      bot.fills.add(i);
-      const toks=bot.orderSize/lp;
-      bot.held+=toks;bot.invested+=bot.orderSize;
-      lg('buy',`<strong>BUY FILLED</strong> — ${bot.sym} Level ${i+1}: ${bot.id==='phar'?toks.toFixed(3):toks.toFixed(1)} ${bot.sym} @ ${bot.fmt(lp)} ($${bot.orderSize})`);
+    if(bot.fills.has(i)||bot.price>lp)return;
+    // Zone filter gate
+    if(!zoneOk)return;
+    // Daily spend limit
+    if(bot.dailyLimit>0&&bot.dailySpent+bot.orderSize>bot.dailyLimit)return;
+    // Weekly spend limit
+    if(bot.weeklyLimit>0&&bot.weeklySpent+bot.orderSize>bot.weeklyLimit)return;
+    // Min interval between fills
+    if(bot.minInterval>0&&bot.lastFillTime>0){
+      if((Date.now()-bot.lastFillTime)<bot.minInterval*60000)return;
     }
+    // FILL executed
+    bot.fills.add(i);
+    const toks=bot.orderSize/lp;
+    bot.held+=toks;bot.invested+=bot.orderSize;
+    bot.dailySpent+=bot.orderSize;bot.weeklySpent+=bot.orderSize;
+    bot.lastFillTime=Date.now();
+    // Register scalp target if scalping is on
+    if(bot.scalping){
+      bot.scalpTargets.push({fillIdx:i,fillPrice:lp,targetPrice:lp*(1+bot.scalpPct/100),tokens:toks*bot.scalpQty/100,active:true});
+    }
+    const zoneNote=bot.zoneFilter?` <span style="color:var(--text3);font-size:9px">[RSI ${bot.rsi.toFixed(0)} ✓]</span>`:'';
+    lg('buy',`<strong>BUY FILLED</strong> — ${bot.sym} L${i+1}: ${bot.id==='phar'?toks.toFixed(3):toks.toFixed(1)} ${bot.sym} @ ${bot.fmt(lp)} ($${bot.orderSize})${zoneNote}`);
   });
+  // Check scalp targets (sell partial when price rises above target)
+  if(bot.scalping){
+    bot.scalpTargets.filter(t=>t.active).forEach(t=>{
+      if(bot.price>=t.targetPrice){
+        t.active=false;
+        const proceeds=t.tokens*bot.price;
+        const cost=t.tokens*t.fillPrice;
+        bot.held=Math.max(0,bot.held-t.tokens);
+        bot.invested=Math.max(0,bot.invested-cost);
+        bot.scalpProfit+=(proceeds-cost);
+        lg('scalp',`<strong>SCALP SELL</strong> — ${bot.sym}: ${bot.id==='phar'?t.tokens.toFixed(3):t.tokens.toFixed(2)} tokens @ ${bot.fmt(bot.price)} → <span class="pos">+$${(proceeds-cost).toFixed(2)}</span>`);
+      }
+    });
+  }
   // Trailing up: if price > high, add new level above
   if(bot.trailing&&bot.price>bot.high*1.02){
     const newHigh=bot.price*0.98;
@@ -794,7 +986,121 @@ function tick(){
     checkFills(bot);
     renderViz(bot);renderLevels(bot);
   });
-  updateStats();updateVolatility();
+  updateStats();updateVolatility();updateFiltersUI();
+}
+// ─── FILTERS UI ──────────────────────────────────────────────────────────────
+function updateFiltersUI(){
+  Object.values(bots).forEach(bot=>{
+    const id=bot.id;
+    // RSI indicator
+    const rsiEl=document.getElementById(id+'-rsi-disp');
+    const rsiSt=document.getElementById(id+'-rsi-status');
+    if(rsiEl){
+      rsiEl.textContent=bot.rsi.toFixed(1);
+      rsiEl.className='fi-val cyc '+(bot.rsi<=bot.rsiThreshold?'fi-ok':'fi-blk');
+    }
+    if(rsiSt){
+      const ok=!bot.zoneFilter||bot.rsi<=bot.rsiThreshold;
+      rsiSt.innerHTML=`threshold: <span class="cyc ${ok?'fi-ok':'fi-blk'}" onclick="cycleRSI('${id}')">${bot.rsiThreshold}</span>`;
+    }
+    // MA20 indicator
+    const maEl=document.getElementById(id+'-ma-disp');
+    const maSt=document.getElementById(id+'-ma-status');
+    if(maEl&&bot.ma20>0){
+      const below=bot.price<bot.ma20;
+      maEl.textContent=bot.fmt(bot.ma20);
+      maEl.className='fi-val '+(below?'fi-ok':'fi-amb');
+      if(maSt){
+        if(bot.zoneFilter&&bot.maFilter){
+          maSt.textContent=below?'✓ below MA':'↑ above MA';
+          maSt.style.color=below?'var(--green)':'var(--amber)';
+        } else {
+          maSt.textContent='(filter off)';maSt.style.color='var(--text3)';
+        }
+      }
+    }
+    // Scalp P&L
+    const scPnl=document.getElementById(id+'-scalp-pnl');
+    if(scPnl){
+      const sp=bot.scalpProfit;
+      scPnl.textContent=(sp>=0?'+':'')+'$'+Math.abs(sp).toFixed(2);
+      scPnl.style.color=sp>0?'var(--green)':sp<0?'var(--red)':'var(--text3)';
+    }
+    // Daily limit bar
+    const dlEl=document.getElementById(id+'-daily-disp');
+    if(dlEl){
+      if(bot.dailyLimit>0){
+        dlEl.textContent='$'+bot.dailySpent.toFixed(0)+'/$'+bot.dailyLimit;
+        const pct=bot.dailySpent/bot.dailyLimit;
+        dlEl.style.color=pct>=1?'var(--red)':pct>=0.7?'var(--amber)':'var(--green)';
+      } else {
+        dlEl.textContent='No limit';dlEl.style.color='var(--text3)';
+      }
+    }
+    // Scalp target count
+    const scCt=document.getElementById(id+'-scalp-count');
+    if(scCt){const active=bot.scalpTargets.filter(t=>t.active).length;scCt.textContent=active+' active';scCt.style.color=active>0?'var(--amber)':'var(--text3)';}
+    // Dim the filter bar when zone filter is disabled
+    const fb=document.getElementById(id+'-filt-bar');
+    if(fb)fb.style.opacity=bot.zoneFilter?'1':'0.4';
+  });
+}
+// ─── CYCLER FUNCTIONS ────────────────────────────────────────────────────────
+const RSI_PRESETS=[30,35,40,45,50,55,60,70];
+const DAILY_PRESETS=[0,200,300,500,750,1000,1500];
+const WEEKLY_PRESETS=[0,500,750,1000,1500,2000,3000];
+const SCALP_PCT_PRESETS=[1.5,2,3,5,7,10,15];
+const SCALP_QTY_PRESETS=[25,33,50,75,100];
+const INTERVAL_PRESETS=[0,3,5,10,15,30,60,120];
+
+function cycleRSI(id){
+  const bot=bots[id];
+  const idx=(RSI_PRESETS.indexOf(bot.rsiThreshold)+1)%RSI_PRESETS.length;
+  bot.rsiThreshold=RSI_PRESETS[idx];
+  lg('info',`<strong>${bot.sym}</strong> RSI zone threshold → <strong>${RSI_PRESETS[idx]}</strong>`);
+  updateFiltersUI();
+}
+function cycleDaily(id){
+  const bot=bots[id];
+  const idx=(DAILY_PRESETS.indexOf(bot.dailyLimit)+1)%DAILY_PRESETS.length;
+  bot.dailyLimit=DAILY_PRESETS[idx];
+  const el=document.getElementById(id+'-dlimit');
+  if(el)el.textContent=DAILY_PRESETS[idx]>0?'$'+DAILY_PRESETS[idx]:'Off';
+  lg('info',`<strong>${bot.sym}</strong> daily spend limit → ${DAILY_PRESETS[idx]>0?'$'+DAILY_PRESETS[idx]:'unlimited'}`);
+  updateFiltersUI();
+}
+function cycleWeekly(id){
+  const bot=bots[id];
+  const idx=(WEEKLY_PRESETS.indexOf(bot.weeklyLimit)+1)%WEEKLY_PRESETS.length;
+  bot.weeklyLimit=WEEKLY_PRESETS[idx];
+  const el=document.getElementById(id+'-wlimit');
+  if(el)el.textContent=WEEKLY_PRESETS[idx]>0?'$'+WEEKLY_PRESETS[idx]:'Off';
+  lg('info',`<strong>${bot.sym}</strong> weekly spend limit → ${WEEKLY_PRESETS[idx]>0?'$'+WEEKLY_PRESETS[idx]:'unlimited'}`);
+}
+function cycleScalpPct(id){
+  const bot=bots[id];
+  const idx=(SCALP_PCT_PRESETS.indexOf(bot.scalpPct)+1)%SCALP_PCT_PRESETS.length;
+  bot.scalpPct=SCALP_PCT_PRESETS[idx];
+  const el=document.getElementById(id+'-scalp-pct');
+  if(el)el.textContent=SCALP_PCT_PRESETS[idx]+'%';
+  bot.scalpTargets.forEach(t=>{if(t.active)t.targetPrice=t.fillPrice*(1+bot.scalpPct/100);});
+  lg('info',`<strong>${bot.sym}</strong> scalp take-profit → <strong>+${SCALP_PCT_PRESETS[idx]}%</strong>`);
+}
+function cycleScalpQty(id){
+  const bot=bots[id];
+  const idx=(SCALP_QTY_PRESETS.indexOf(bot.scalpQty)+1)%SCALP_QTY_PRESETS.length;
+  bot.scalpQty=SCALP_QTY_PRESETS[idx];
+  const el=document.getElementById(id+'-scalp-qty');
+  if(el)el.textContent=SCALP_QTY_PRESETS[idx]+'%';
+  lg('info',`<strong>${bot.sym}</strong> scalp sell qty → <strong>${SCALP_QTY_PRESETS[idx]}%</strong> of filled tokens`);
+}
+function cycleInterval(id){
+  const bot=bots[id];
+  const idx=(INTERVAL_PRESETS.indexOf(bot.minInterval)+1)%INTERVAL_PRESETS.length;
+  bot.minInterval=INTERVAL_PRESETS[idx];
+  const label=INTERVAL_PRESETS[idx]>0?INTERVAL_PRESETS[idx]+'min':'Off';
+  ['int-disp','mint'].forEach(sfx=>{const e=document.getElementById(id+'-'+sfx);if(e)e.textContent=label;});
+  lg('info',`<strong>${bot.sym}</strong> min fill interval → ${INTERVAL_PRESETS[idx]>0?INTERVAL_PRESETS[idx]+' minutes':'unlimited'}`);
 }
 // ─── CONTROLS ───────────────────────────────────────────────────────────────
 function toggleBot(id){
@@ -812,11 +1118,16 @@ function setGridType(id,type,btn){
 }
 function toggleFeature(id,feat){
   const bot=bots[id];
-  const key=feat==='trailing'?'trailing':'expansion';
+  const keyMap={trailing:'trailing',expansion:'expansion',zone:'zoneFilter',scalp:'scalping'};
+  const togMap={trailing:id+'-trail-tog',expansion:id+'-exp-tog',zone:id+'-zone-tog',scalp:id+'-scalp-tog'};
+  const nameMap={trailing:'Trailing Up',expansion:'Expansion Down',zone:'Zone Filter (RSI+MA)',scalp:'Scalping module'};
+  const key=keyMap[feat];
   bot[key]=!bot[key];
-  const togEl=document.getElementById(id+'-'+feat.slice(0,5)+'-tog');
-  togEl.classList.toggle('on',bot[key]);togEl.classList.toggle('off',!bot[key]);
-  lg('info',`<strong>${bot.sym}</strong> ${feat} ${bot[key]?'<span style="color:#10b981">ENABLED</span>':'<span style="color:#f59e0b">DISABLED</span>'}`);
+  const togEl=document.getElementById(togMap[feat]);
+  if(togEl){togEl.classList.toggle('on',bot[key]);togEl.classList.toggle('off',!bot[key]);}
+  // Extra: when scalping toggled off, clear pending targets
+  if(feat==='scalp'&&!bot.scalping)bot.scalpTargets=bot.scalpTargets.filter(t=>!t.active);
+  lg('info',`<strong>${bot.sym}</strong> ${nameMap[feat]||feat} ${bot[key]?'<span style="color:#10b981">ENABLED</span>':'<span style="color:#f59e0b">DISABLED</span>'}`);
 }
 function switchTab(name,el){
   document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
@@ -951,7 +1262,7 @@ lg('info','<strong>PHAR</strong>: 8 arithmetic levels $131–$180 on Avalanche')
 lg('info','<strong>AERO</strong>: 10 arithmetic levels $0.110–$0.310 on Base');
 lg('info','Trailing Up + Expansion Down <strong>enabled</strong> on both bots');
 Object.values(bots).forEach(bot=>{renderViz(bot);renderLevels(bot);});
-updateStats();updateVolatility();
+updateStats();updateVolatility();updateFiltersUI();
 setInterval(tick,1500);
 </script>
 <!-- WALLET CONNECTION ADDON - injected before </body> -->
